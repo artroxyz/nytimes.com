@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connections</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f9f9f9;
+    --border: #e0e0e0;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --card-bg: #efefe6;
+    --card-hover: #e2e2d8;
+    --card-selected: #5a594e;
+    --card-selected-text: #fff;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+  width: 100%;
+  max-width: 600px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-left, .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+.nav-icon:hover { background: var(--surface); }
+
+.nav-subscribe {
+  background: none;
+  border: 1.5px solid var(--text);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  transition: all 0.15s;
+  margin-left: 4px;
+}
+.nav-subscribe:hover { background: var(--text); color: #fff; }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+  }
+
+  header p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  #play-view {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px 16px 40px;
+  }
+
+  .instructions {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .solved-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .solved-row {
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-align: center;
+    animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .solved-row .category-label {
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .solved-row .category-words {
+    font-size: 0.95rem;
+    margin-top: 2px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    aspect-ratio: 1.15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px 6px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    user-select: none;
+    transition: background 0.12s, transform 0.1s;
+    border: none;
+  }
+
+  .card:hover { background: var(--card-hover); }
+
+  .card.selected {
+    background: var(--card-selected);
+    color: var(--card-selected-text);
+    transform: scale(1.04);
+  }
+
+  .card.shake { animation: shake 0.4s ease; }
+  .card.bounce { animation: bounce 0.35s ease; }
+
+  .one-away {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    text-align: center;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #856404;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .mistakes-row {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--text);
+    display: inline-block;
+    transition: background 0.3s;
+    margin: 0 2px;
+  }
+  .dot.used { background: #ccc; }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 11px 22px;
+    border-radius: 30px;
+    border: 1.5px solid var(--text);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .btn:hover { background: var(--text); color: #fff; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn:disabled:hover { background: transparent; color: var(--text); }
+
+  .btn-primary { background: var(--text); color: #fff; }
+  .btn-primary:hover { background: #444; border-color: #444; }
+
+  .result-banner {
+    text-align: center;
+    padding: 18px;
+    margin-top: 10px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: none;
+  }
+  .result-banner h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; }
+  .result-banner p { color: var(--text-muted); margin-top: 6px; font-size: 0.9rem; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    header h1 { font-size: 1.5rem; }
+    #play-view { padding: 14px 10px 36px; }
+    .instructions { font-size: 0.8rem; margin-bottom: 14px; }
+    .grid { gap: 6px; }
+    .card { font-size: 0.78rem; padding: 6px 4px; letter-spacing: 0.02em; }
+    .solved-row .category-label { font-size: 0.72rem; }
+    .solved-row .category-words { font-size: 0.85rem; }
+    .controls { flex-direction: column; align-items: stretch; gap: 8px; }
+    .controls .btn { text-align: center; padding: 13px; font-size: 0.9rem; }
+    .result-banner h2 { font-size: 1.3rem; }
+  }
+
+  @media (max-width: 360px) {
+    .card { font-size: 0.7rem; }
+  }
+
+  @media (hover: none) {
+    .card { min-height: 58px; }
+    .card:hover { background: var(--card-bg); }
+    .card.selected:hover { background: var(--card-selected); }
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-left">
+      <button class="nav-icon" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="2" y1="5" x2="18" y2="5"/>
+          <line x1="2" y1="10" x2="18" y2="10"/>
+          <line x1="2" y1="15" x2="18" y2="15"/>
+        </svg>
+      </button>
+    </div>
+    <div class="nav-right">
+      <button class="nav-icon" aria-label="Hint">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 2a6 6 0 0 1 6 6c0 2.5-1.5 4-2.5 5H6.5C5.5 12 4 10.5 4 8a6 6 0 0 1 6-6z"/>
+          <line x1="7.5" y1="15" x2="12.5" y2="15"/>
+          <line x1="7.5" y1="17.5" x2="12.5" y2="17.5"/>
+        </svg>
+      </button>
+      <button class="nav-icon" aria-label="Stats">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="4" height="11" rx="0.5"/>
+          <rect x="8" y="3" width="4" height="15" rx="0.5"/>
+          <rect x="14" y="11" width="4" height="7" rx="0.5"/>
+        </svg>
+      </button>
+      <button class="nav-icon" aria-label="How to play">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="10" cy="10" r="8"/>
+          <path d="M10 14v-1"/>
+          <path d="M10 11c0-2 3-2 3-4a3 3 0 0 0-6 0"/>
+        </svg>
+      </button>
+      <button class="nav-subscribe" aria-label="Subscribe">Subscribe</button>
+    </div>
+  </header>
+
+<div id="play-view">
+  <p class="instructions">Create four groups of four!</p>
+  <div class="solved-area" id="solved-area"></div>
+  <div class="one-away" id="one-away">One away…</div>
+  <div class="grid" id="grid"></div>
+  <div class="mistakes-row">
+    <span>Mistakes remaining:</span>
+    <span id="dots"></span>
+  </div>
+  <div class="controls">
+    <button class="btn" onclick="shuffle()">Shuffle</button>
+    <button class="btn" onclick="deselectAll()">Deselect all</button>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitGuess()" disabled>Submit</button>
+  </div>
+  <div class="result-banner" id="result-banner">
+    <h2 id="result-title"></h2>
+    <p id="result-msg"></p>
+    <button class="btn btn-primary" style="margin-top:14px" onclick="resetGame()">Play Again</button>
+  </div>
+</div>
+
+<script>
+const COLORS = [
+  { bg: '#f9df6d', dark: '#7a6200' },
+  { bg: '#a0c35a', dark: '#2d4e00' },
+  { bg: '#b0c4ef', dark: '#1a3a7a' },
+  { bg: '#ba81c5', dark: '#4a1560' },
+];
+
+// ── YOUR PUZZLE ───────────────────────────────────────────────────────────────
+// `words`       — shown on the game cards (plain text)
+// `answerWords` — optional; if set, used instead of `words` in the solved row reveal
+const PUZZLE = [
+{ category: 'Places Jakob has Lived',  words: ['POTSDAM', 'LEIPZIG', 'ODENSE', 'BERGEN'], color: 0 },
+  { category: 'Modes of Transportation',  words: ['FLØIBANEN', 'AIRPLANE', 'TRAIN', 'BIKE'], color: 1 },
+  { category: 'Activities we enjoy together',  words: ['WALK', 'KISS', 'COOK', 'TRAVEL'], color: 2 },
+  { category: 'Words that contain 3-letter guys\' names:',
+    words: ['HALEMBA', 'TORONTO', 'PORTIMÃO', 'DANCE'],
+    answerWords: ['"HAL"EMBA', 'TO"RON"TO', 'POR"TIM"ÃO', '"DAN"CE'],
+    color: 3 },
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
+let remaining = [], selected = [], mistakes = 0;
+const MAX_MISTAKES = 4;
+
+function initGame() {
+  remaining = [];
+  PUZZLE.forEach((g, gi) => g.words.forEach(w => remaining.push({ word: w, groupIdx: gi })));
+  selected = []; mistakes = 0;
+  document.getElementById('solved-area').innerHTML = '';
+  document.getElementById('one-away').style.display = 'none';
+  document.getElementById('result-banner').style.display = 'none';
+  renderDots();
+  shuffleArr(remaining);
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  remaining.forEach(item => {
+    const card = document.createElement('button');
+    card.className = 'card' + (selected.includes(item.word) ? ' selected' : '');
+    card.textContent = item.word;
+    card.onclick = () => toggleCard(item.word, card);
+    grid.appendChild(card);
+  });
+  updateSubmit();
+}
+
+function renderDots() {
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < MAX_MISTAKES; i++) {
+    const d = document.createElement('span');
+    d.className = 'dot' + (i < mistakes ? ' used' : '');
+    dots.appendChild(d);
+  }
+}
+
+function toggleCard(word, el) {
+  if (selected.includes(word)) {
+    selected = selected.filter(w => w !== word);
+    el.classList.remove('selected');
+  } else {
+    if (selected.length >= 4) return;
+    selected.push(word);
+    el.classList.add('selected');
+  }
+  document.getElementById('one-away').style.display = 'none';
+  updateSubmit();
+}
+
+function updateSubmit() {
+  document.getElementById('submit-btn').disabled = selected.length !== 4;
+}
+
+function deselectAll() {
+  selected = [];
+  document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+  updateSubmit();
+}
+
+function shuffle() { shuffleArr(remaining); renderGrid(); }
+
+function submitGuess() {
+  if (selected.length !== 4) return;
+  let matchGroup = -1;
+  for (let gi = 0; gi < PUZZLE.length; gi++) {
+    if (!remaining.some(r => r.groupIdx === gi)) continue;
+    if (selected.every(w => PUZZLE[gi].words.includes(w))) { matchGroup = gi; break; }
+  }
+  if (matchGroup !== -1) {
+    solveGroup(matchGroup);
+  } else {
+    let bestOverlap = 0;
+    for (let gi = 0; gi < PUZZLE.length; gi++) {
+      if (!remaining.some(r => r.groupIdx === gi)) continue;
+      const overlap = selected.filter(w => PUZZLE[gi].words.includes(w)).length;
+      if (overlap > bestOverlap) bestOverlap = overlap;
+    }
+    document.getElementById('one-away').style.display = bestOverlap === 3 ? 'block' : 'none';
+    mistakes++;
+    renderDots();
+    document.querySelectorAll('.card.selected').forEach(c => {
+      c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+      setTimeout(() => c.classList.remove('shake'), 500);
+    });
+    deselectAll();
+    if (mistakes >= MAX_MISTAKES) setTimeout(() => endGame(false), 400);
+  }
+}
+
+function solveGroup(gi) {
+  const g = PUZZLE[gi], color = COLORS[g.color];
+  document.querySelectorAll('.card.selected').forEach((c, i) => {
+    setTimeout(() => { c.classList.add('bounce'); setTimeout(() => c.classList.remove('bounce'), 400); }, i * 80);
+  });
+  setTimeout(() => {
+    remaining = remaining.filter(r => r.groupIdx !== gi);
+    selected = [];
+    const row = document.createElement('div');
+    row.className = 'solved-row';
+    row.style.background = color.bg;
+    row.style.color = color.dark;
+    const displayWords = g.answerWords || g.words;
+    row.innerHTML = `<div class="category-label">${g.category}</div><div class="category-words">${displayWords.join(', ')}</div>`;
+    document.getElementById('solved-area').appendChild(row);
+    document.getElementById('one-away').style.display = 'none';
+    renderGrid();
+    if (remaining.length === 0) setTimeout(() => endGame(true), 300);
+  }, 400);
+}
+
+function endGame(won) {
+  const banner = document.getElementById('result-banner');
+  document.getElementById('result-title').textContent = won ? '🎉 Solved!' : 'Better luck next time!';
+  document.getElementById('result-msg').textContent = won
+    ? (mistakes === 0 ? 'Perfect — no mistakes!' : `Solved with ${mistakes} mistake${mistakes > 1 ? 's' : ''}.`)
+    : 'The answers have been revealed above.';
+  if (!won) {
+    [...new Set(remaining.map(r => r.groupIdx))].forEach(gi => {
+      const g = PUZZLE[gi], color = COLORS[g.color];
+      const row = document.createElement('div');
+      row.className = 'solved-row';
+      row.style.background = color.bg; row.style.color = color.dark;
+      const displayWords = g.answerWords || g.words;
+      row.innerHTML = `<div class="category-label">${g.category}</div><div class="category-words">${displayWords.join(', ')}</div>`;
+      document.getElementById('solved-area').appendChild(row);
+    });
+    document.getElementById('grid').innerHTML = '';
+  }
+  banner.style.display = 'block';
+}
+
+function resetGame() { initGame(); }
+
+function shuffleArr(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+initGame();
+</script>
+</body>
+</html>
