@@ -32,50 +32,12 @@
   }
 
   header {
-  width: 100%;
-  max-width: 600px;
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-}
-
-.nav-left, .nav-right {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.nav-icon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background 0.15s;
-}
-.nav-icon:hover { background: var(--surface); }
-
-.nav-subscribe {
-  background: none;
-  border: 1.5px solid var(--text);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--text);
-  letter-spacing: 0.02em;
-  transition: all 0.15s;
-  margin-left: 4px;
-}
-.nav-subscribe:hover { background: var(--text); color: #fff; }
+    width: 100%;
+    max-width: 600px;
+    padding: 20px 16px 14px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
 
   header h1 {
     font-family: 'DM Serif Display', serif;
@@ -99,9 +61,9 @@
 
   .instructions {
     text-align: center;
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .solved-area {
@@ -155,6 +117,7 @@
     user-select: none;
     transition: background 0.12s, transform 0.1s;
     border: none;
+    color: inherit;
   }
 
   .card:hover { background: var(--card-hover); }
@@ -198,7 +161,6 @@
     background: var(--text);
     display: inline-block;
     transition: background 0.3s;
-    margin: 0 2px;
   }
   .dot.used { background: #ccc; }
 
@@ -248,7 +210,6 @@
     .instructions { font-size: 0.8rem; margin-bottom: 14px; }
     .grid { gap: 6px; }
     .card { font-size: 0.78rem; padding: 6px 4px; letter-spacing: 0.02em; }
-    .body {color: var(--text); }
     .solved-row .category-label { font-size: 0.72rem; }
     .solved-row .category-words { font-size: 0.85rem; }
     .controls { flex-direction: column; align-items: stretch; gap: 8px; }
@@ -287,44 +248,13 @@
 </head>
 <body>
 
-  <header>
-    <div class="nav-left">
-      <button class="nav-icon" aria-label="Menu">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <line x1="2" y1="5" x2="18" y2="5"/>
-          <line x1="2" y1="10" x2="18" y2="10"/>
-          <line x1="2" y1="15" x2="18" y2="15"/>
-        </svg>
-      </button>
-    </div>
-    <div class="nav-right">
-      <button class="nav-icon" aria-label="Hint">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10 2a6 6 0 0 1 6 6c0 2.5-1.5 4-2.5 5H6.5C5.5 12 4 10.5 4 8a6 6 0 0 1 6-6z"/>
-          <line x1="7.5" y1="15" x2="12.5" y2="15"/>
-          <line x1="7.5" y1="17.5" x2="12.5" y2="17.5"/>
-        </svg>
-      </button>
-      <button class="nav-icon" aria-label="Stats">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="7" width="4" height="11" rx="0.5"/>
-          <rect x="8" y="3" width="4" height="15" rx="0.5"/>
-          <rect x="14" y="11" width="4" height="7" rx="0.5"/>
-        </svg>
-      </button>
-      <button class="nav-icon" aria-label="How to play">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="10" cy="10" r="8"/>
-          <path d="M10 14v-1"/>
-          <path d="M10 11c0-2 3-2 3-4a3 3 0 0 0-6 0"/>
-        </svg>
-      </button>
-      <button class="nav-subscribe" aria-label="Subscribe">Subscribe</button>
-    </div>
-  </header>
+<header>
+  <h1>Connections</h1>
+  <p>Group words that share a common thread</p>
+</header>
 
 <div id="play-view">
-  <p class="instructions">Create four groups of four!</p>
+  <p class="instructions">Select four words that belong together.</p>
   <div class="solved-area" id="solved-area"></div>
   <div class="one-away" id="one-away">One away…</div>
   <div class="grid" id="grid"></div>
@@ -353,16 +283,11 @@ const COLORS = [
 ];
 
 // ── YOUR PUZZLE ───────────────────────────────────────────────────────────────
-// `words`       — shown on the game cards (plain text)
-// `answerWords` — optional; if set, used instead of `words` in the solved row reveal
 const PUZZLE = [
-{ category: 'Places Jakob has Lived',  words: ['POTSDAM', 'LEIPZIG', 'ODENSE', 'BERGEN'], color: 0 },
-  { category: 'Modes of Transportation',  words: ['FLØIBANEN', 'AIRPLANE', 'TRAIN', 'BIKE'], color: 1 },
+  { category: 'Places Jakob has Lived',  words: ['POTSDAM', 'LEIPZIG', 'ODENSE', 'BERGEN'], color: 0 },
+  { category: 'Modes of Transportation', words: ['FLØIBANEN', 'FLIGHT', 'TRAIN', 'BIKE'], color: 1 },
   { category: 'Activities we enjoy together',  words: ['WALK', 'KISS', 'COOK', 'TRAVEL'], color: 2 },
-  { category: 'Words that contain 3-letter guys\' names:',
-    words: ['HALEMBA', 'TORONTO', 'PORTIMÃO', 'DANCE'],
-    answerWords: ['"HAL"EMBA', 'TO"RON"TO', 'POR"TIM"ÃO', '"DAN"CE'],
-    color: 3 },
+  { category: 'Words that contain 3-letter names for guys: "HAL"EMBA, TO"RON"TO, POR"TIM"ÃO, "DAN"CE', words: ['HALEMBA', 'TORONTO', 'PORTIMÃO', 'DANCE'], color: 3 },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -469,8 +394,7 @@ function solveGroup(gi) {
     row.className = 'solved-row';
     row.style.background = color.bg;
     row.style.color = color.dark;
-    const displayWords = g.answerWords || g.words;
-    row.innerHTML = `<div class="category-label">${g.category}</div><div class="category-words">${displayWords.join(', ')}</div>`;
+    row.innerHTML = `<div class="category-label">${g.category}</div><div class="category-words">${g.words.join(', ')}</div>`;
     document.getElementById('solved-area').appendChild(row);
     document.getElementById('one-away').style.display = 'none';
     renderGrid();
@@ -490,8 +414,7 @@ function endGame(won) {
       const row = document.createElement('div');
       row.className = 'solved-row';
       row.style.background = color.bg; row.style.color = color.dark;
-      const displayWords = g.answerWords || g.words;
-      row.innerHTML = `<div class="category-label">${g.category}</div><div class="category-words">${displayWords.join(', ')}</div>`;
+      row.innerHTML = `<div class="category-label">${g.category}</div><div class="category-words">${g.words.join(', ')}</div>`;
       document.getElementById('solved-area').appendChild(row);
     });
     document.getElementById('grid').innerHTML = '';
