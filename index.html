@@ -184,7 +184,7 @@
 
   .mistakes-row {
     text-align: center;
-    font-size: 0.82rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin-bottom: 14px;
     display: flex;
@@ -194,12 +194,12 @@
   }
 
   .dot {
-    width: 11px; height: 11px;
+    width: 13px; height: 13px;
     border-radius: 50%;
     background: var(--text);
     display: inline-block;
     transition: background 0.3s;
-    margin: 0 2px;
+    margin: 0 4px;
   }
   .dot.used { background: #ccc; }
 
@@ -212,7 +212,7 @@
   }
 
   .btn {
-    padding: 11px 22px;
+    padding: 11px 16px;
     border-radius: 30px;
     border: 1.5px solid var(--text);
     background: transparent;
@@ -253,7 +253,7 @@
     .body {color: var(--text); }
     .solved-row .category-label { font-size: 0.72rem; }
     .solved-row .category-words { font-size: 0.85rem; }
-    .controls { flex-direction: column; align-items: stretch; gap: 8px; }
+    .controls { flex-direction: row; align-items: stretch; gap: 8px; }
     .controls .btn { text-align: center; padding: 13px; font-size: 0.9rem; }
     .result-banner h2 { font-size: 1.3rem; }
   }
@@ -336,7 +336,7 @@
   </div>
   <div class="controls">
     <button class="btn" onclick="shuffle()">Shuffle</button>
-    <button class="btn" onclick="deselectAll()">Deselect all</button>
+    <button class="btn" onclick="deselectAll()">Deselect All</button>
     <button class="btn btn-primary" id="submit-btn" onclick="submitGuess()" disabled>Submit</button>
   </div>
   <div class="result-banner" id="result-banner">
